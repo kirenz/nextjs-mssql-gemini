@@ -40,7 +40,7 @@ class GeminiProvider(AIProvider):
 
         genai.configure(api_key=api_key)
 
-        analysis_model_id = os.getenv("GEMINI_MODEL", "models/gemini-2.5-pro")
+        analysis_model_id = os.getenv("GEMINI_MODEL", "models/gemini-2.5-flash-lite")
         sql_model_id = os.getenv("GEMINI_SQL_MODEL", analysis_model_id)
 
         analysis_model_id = self._normalize_model_id(analysis_model_id)
@@ -52,7 +52,7 @@ class GeminiProvider(AIProvider):
     @staticmethod
     def _normalize_model_id(model_id: str) -> str:
         if not model_id:
-            return "models/gemini-2.5-pro"
+            return "models/gemini-2.5-flash-lite"
         model_id = model_id.strip()
         if not model_id.startswith("models/"):
             model_id = f"models/{model_id}"

@@ -89,12 +89,15 @@ class ProcedureService:
             """
             SELECT
                 s.name AS schema_name,
-                p.name AS procedure_name,
-                m.definition AS definition
-            FROM sys.procedures p
-            INNER JOIN sys.schemas s ON p.schema_id = s.schema_id
-            LEFT JOIN sys.sql_modules m ON p.object_id = m.object_id
-            WHERE s.name = :schema AND p.name = :name
+                o.name AS procedure_name,
+                o.object_id AS object_id,
+                COALESCE(m.definition, OBJECT_DEFINITION(o.object_id)) AS definition
+            FROM sys.all_objects o
+            INNER JOIN sys.schemas s ON o.schema_id = s.schema_id
+            LEFT JOIN sys.sql_modules m ON o.object_id = m.object_id
+            WHERE s.name = :schema
+              AND o.name = :name
+              AND o.type IN ('P', 'X')
             """
         )
 
@@ -110,10 +113,8 @@ class ProcedureService:
                 p.is_output AS is_output,
                 p.has_default_value AS has_default_value,
                 p.parameter_id AS ordinal_position
-            FROM sys.parameters p
-            INNER JOIN sys.objects o ON p.object_id = o.object_id
-            INNER JOIN sys.schemas s ON o.schema_id = s.schema_id
-            WHERE s.name = :schema AND o.name = :name
+            FROM sys.all_parameters p
+            WHERE p.object_id = :object_id
             ORDER BY p.parameter_id
             """
         )
@@ -126,8 +127,9 @@ class ProcedureService:
             if not definition_result:
                 return None
 
+            object_id = definition_result["object_id"]
             params_result = connection.execute(
-                params_query, {"schema": safe_schema, "name": safe_name}
+                params_query, {"object_id": object_id}
             ).mappings()
 
             parameters: List[Dict[str, Any]] = []

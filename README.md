@@ -124,6 +124,6 @@ The development UI runs on [http://localhost:3000](http://localhost:3000) and pr
 
 ## Development Notes
 
-- The backend now uses `models/gemini-2.5-pro` by default (configurable via `GEMINI_MODEL`) for analytical responses and the same model for SQL generation. Override with `GEMINI_SQL_MODEL` if you prefer a different model; the `models/` prefix is added automatically when omitted.
+- The backend uses `models/gemini-2.5-flash-lite` by default (configurable via `GEMINI_MODEL`) for analytical responses and the same model for SQL generation. Override with `GEMINI_SQL_MODEL` if you prefer a different model; the `models/` prefix is added automatically when omitted.
 
 - The SQL generation prompt is locked to the `DataSet_Monthly_Sales_and_Quota` table; extend it if more tables become available.

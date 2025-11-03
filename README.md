@@ -1,4 +1,4 @@
-# Analytics Platform (Next.js 16 + FastAPI + Gemini)
+# Analytics AI Platform (Next.js 16 + FastAPI + Gemini)
 
 Business analytics application with a FastAPI backend, SQL Server connectivity, and a Next.js 16.0.1 frontend that communicates with the Gemini API for natural-language insights, SQL generation, and visualization guidance.
 
@@ -10,15 +10,24 @@ Business analytics application with a FastAPI backend, SQL Server connectivity, 
 
 ## Prerequisites
 
-You should have [`uv`](https://docs.astral.sh/uv/getting-started/installation/) installed and an ODBC driver for Microsoft SQL Server.
+- You should have [`uv`](https://docs.astral.sh/uv/getting-started/installation/) installed and an ODBC driver for Microsoft SQL Server.
 
-## Quick Start
+- Google Gemini API key with access to current `models/gemini-*` endpoints
+- Access credentials for the *AdventureBikes Sales DataMart* SQL Server instance
 
-1. Install Node.js 20+. For Node.js we recommend using [`nvm`](https://github.com/nvm-sh/nvm):
+## Setup Instructions
+
+> [!NOTE]
+> We use nvm for Node.js version management so you can easily switch between projects.
+
+
+1. Install Node.js 20 with[`nvm`](https://github.com/nvm-sh/nvm):
+
+   **MacOS/Linux:**
 
    Install or update `nvm` (macOS/Linux):
    ```bash
-   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh | bash
    ```
    Reload your shell, then install Node.js 20:
    ```bash
@@ -30,19 +39,26 @@ You should have [`uv`](https://docs.astral.sh/uv/getting-started/installation/) 
    nvm use 20
    ```
 
-   Windows users can install [`nvm-windows`](https://github.com/coreybutler/nvm-windows) or download Node.js 20 from the [official installer](https://nodejs.org/en/download/prebuilt-installer).
+   **Windows** 
    
+   - Install [`nvm-windows`](https://github.com/coreybutler/nvm-windows) or download Node.js 20 from the [official installer](https://nodejs.org/en/download/prebuilt-installer).
+   
+
+
 2. Clone the repository:
    Fetch the project sources:
    ```bash
    git clone https://github.com/kirenz/nextjs-mssql-gemini.git
    ```
-3. Enter the project directory:
-   Move into the cloned folder:
+
+ 3.  Move into the cloned folder:
+   
    ```bash
    cd nextjs-mssql-gemini
    ```
-4. Set up the backend environment:
+
+4. Set up the **backend environment**:
+   
    Switch to the backend workspace:
    ```bash
    cd backend
@@ -56,12 +72,10 @@ You should have [`uv`](https://docs.astral.sh/uv/getting-started/installation/) 
    cp app/.env.example app/.env
    ```
 5. Edit `backend/app/.env` with your SQL Server credentials and `GEMINI_API_KEY`.
-6. Start the FastAPI backend (leave this terminal running):
-   Launch the development API server:
-   ```bash
-   uv run uvicorn app.api.main:app --reload --port 8000
-   ```
-7. In a new terminal, install frontend dependencies and launch Next.js:
+
+
+6. Install **frontend dependencies** and launch Next.js:
+
    Return to the project root:
    ```bash
    cd nextjs-mssql-gemini
@@ -74,19 +88,9 @@ You should have [`uv`](https://docs.astral.sh/uv/getting-started/installation/) 
    ```bash
    npm install
    ```
-   Start the Next.js development server:
-   ```bash
-   npm run dev
-   ```
-8. Open http://localhost:3000 in your browser to use the analytics UI.
 
-## Prerequisites
-- Python 3.11 with [`uv`](https://docs.astral.sh/uv/getting-started/installation/) for backend dependency management
-- Node.js 20+ and npm (or an alternative package manager) for the frontend
-- Google Gemini API key with access to current `models/gemini-*` endpoints
-- Access credentials for the *AdventureBikes Sales DataMart* SQL Server instance
 
-## Backend Setup
+## How to Run the Application
 
 Change to the `backend` directory:
 
@@ -94,29 +98,7 @@ Change to the `backend` directory:
 cd backend
 ```
 
-Install dependencies using `uv`:
-
-```bash
-uv sync
-```
-
-Rename `app/.env.example` to `app/.env` and enter the SQL Server credentials and your Gemini key:
-
-```
-DB_SERVER=text
-DB_NAME=text
-DB_USER=text
-DB_PASSWORD=text
-GEMINI_API_KEY=text
-```
-
-Then launch the API from the `backend` directory:
-
-```bash
-cd backend
-```
-
-Start the FastAPI server:
+Start the FastAPI backend (leave this terminal running):
 
 ```bash
 uv run uvicorn app.api.main:app --reload --port 8000
@@ -124,29 +106,15 @@ uv run uvicorn app.api.main:app --reload --port 8000
 
 Let this run in the background. Dont close the terminal window/tab.
 
-Endpoints:
-- `POST /api/query` – generate SQL, execute it, and return analysis + visualization metadata
-- `GET /api/graph/sales-organization` – hierarchical sales organization graph
-- `GET /api/graph/node/{id}` – drill into a specific node’s metrics
-- `GET /api/health` – service health check
-
-## Frontend Setup
-
 Open a new terminal window/tab.
 
-Change to the `frontend` directory and install dependencies:
+Change to the `frontend` directory:
 
 ```bash
 cd frontend
 ```
 
-Initialize the project and install dependencies:
-
-```bash
-npm install
-```
-
-Start the development server:
+Start the Next.js development server:
 
 ```bash
 npm run dev
@@ -159,9 +127,3 @@ The development UI runs on [http://localhost:3000](http://localhost:3000) and pr
 - The backend now uses `models/gemini-2.5-pro` by default (configurable via `GEMINI_MODEL`) for analytical responses and the same model for SQL generation. Override with `GEMINI_SQL_MODEL` if you prefer a different model; the `models/` prefix is added automatically when omitted.
 
 - The SQL generation prompt is locked to the `DataSet_Monthly_Sales_and_Quota` table; extend it if more tables become available.
-- `CacheManager` is prepared for future caching work but is not yet wired into request handling.
-
-## Scripts
-- `uv run uvicorn app.api.main:app --reload --port 8000`
-- `npm run dev` (frontend development server)
-- `npm run build && npm run start` for a production-ready frontend build

@@ -65,14 +65,32 @@ const renderAngledTick = ({ x, y, payload }: AngledTickProps): JSX.Element => {
 };
 
 const normalizeKey = (key: string) => {
-  if (!key) return key;
-  const sanitized = key
+  if (!key) return "";
+  return key
     .trim()
-    .replace(/\s+/g, '_')
-    .replace(/[^\w]/g, '_')
+    .replace(/\s+/g, "_")
+    .replace(/[^\w]/g, "_")
+    .replace(/_+/g, "_")
     .toLowerCase();
+};
 
-  return sanitized;
+const simplifyKey = (key: string) => key.replace(/[_\s]/g, "").toLowerCase();
+
+const coerceNumeric = (value: unknown) => {
+  if (typeof value === "number" || value === null || value === undefined) {
+    return value;
+  }
+
+  if (typeof value === "string") {
+    const stripped = value.replace(/[, ]+/g, "").trim();
+    if (!stripped) return value;
+    const parsed = Number(stripped);
+    if (Number.isFinite(parsed)) {
+      return parsed;
+    }
+  }
+
+  return value;
 };
 
 export function VisualizationPanel({ data, columns, config }: VisualizationPanelProps) {
@@ -90,13 +108,34 @@ export function VisualizationPanel({ data, columns, config }: VisualizationPanel
 
   const columnKeyMap = useMemo(() => {
     const map: Record<string, string> = {};
-    columns.forEach((column) => {
+
+    columns.forEach((rawColumn) => {
+      const column = rawColumn?.trim();
+      if (!column) return;
       const normalized = normalizeKey(column);
       if (!normalized) return;
-      map[column] = normalized;
-      map[column.toLowerCase()] = normalized;
-      map[normalized] = normalized;
+
+      const aliases = new Set<string>([
+        column,
+        column.toLowerCase(),
+        column.replace(/[^\w]/g, "").toLowerCase(),
+        normalized,
+        simplifyKey(normalized),
+      ]);
+
+      if (rawColumn && rawColumn !== column) {
+        aliases.add(rawColumn);
+        aliases.add(rawColumn.toLowerCase());
+        aliases.add(rawColumn.replace(/[^\w]/g, "").toLowerCase());
+      }
+
+      aliases.forEach((alias) => {
+        if (alias) {
+          map[alias] = normalized;
+        }
+      });
     });
+
     return map;
   }, [columns]);
 
@@ -104,13 +143,24 @@ export function VisualizationPanel({ data, columns, config }: VisualizationPanel
     if (!data) return [];
     return data.map((row) => {
       const normalizedRow: Record<string, unknown> = {};
-      Object.entries(row || {}).forEach(([key, value]) => {
+      Object.entries(row || {}).forEach(([rawKey, value]) => {
+        const key = rawKey.trim();
+        const lowerKey = key.toLowerCase();
+        const compactKey = key.replace(/[^\w]/g, "").toLowerCase();
+        const normalizedKeyCandidate = normalizeKey(key);
+        const simplifiedKey = normalizedKeyCandidate
+          ? simplifyKey(normalizedKeyCandidate)
+          : "";
+
         const normalizedKey =
           columnKeyMap[key] ||
-          columnKeyMap[key.toLowerCase()] ||
-          normalizeKey(key);
+          columnKeyMap[lowerKey] ||
+          columnKeyMap[compactKey] ||
+          (normalizedKeyCandidate ? columnKeyMap[normalizedKeyCandidate] : undefined) ||
+          (simplifiedKey ? columnKeyMap[simplifiedKey] : undefined) ||
+          normalizedKeyCandidate;
         if (normalizedKey) {
-          normalizedRow[normalizedKey] = value;
+          normalizedRow[normalizedKey] = coerceNumeric(value);
         }
       });
       return normalizedRow;
@@ -120,11 +170,21 @@ export function VisualizationPanel({ data, columns, config }: VisualizationPanel
   const getDataKey = useCallback(
     (key?: string | null) => {
       if (!key) return undefined;
-      const lowerCased = key.toLowerCase();
-      const fromMap =
-        columnKeyMap[key] ||
-        columnKeyMap[lowerCased];
-      return fromMap || normalizeKey(key) || undefined;
+      const trimmed = key.trim();
+      const lowerCased = trimmed.toLowerCase();
+      const normalized = normalizeKey(trimmed);
+      const simplified = normalized ? simplifyKey(normalized) : "";
+      const compact = trimmed.replace(/[^\w]/g, "").toLowerCase();
+
+      return (
+        columnKeyMap[trimmed] ||
+        columnKeyMap[lowerCased] ||
+        columnKeyMap[compact] ||
+        (normalized ? columnKeyMap[normalized] : undefined) ||
+        (simplified ? columnKeyMap[simplified] : undefined) ||
+        normalized ||
+        undefined
+      );
     },
     [columnKeyMap]
   );

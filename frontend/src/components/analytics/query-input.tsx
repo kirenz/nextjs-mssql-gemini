@@ -30,6 +30,7 @@ interface QueryResponse {
   data: any[];
   columns: string[];
   sql_query: string;
+  chart_image?: string | null;
   visualization?: {
     type: 'bar' | 'line' | 'multiple' | 'scatter' | 'pie';
     x_axis: string;
@@ -162,6 +163,19 @@ export function QueryInput() {
             </div>
           </Card>
 
+          {response.chart_image && (
+            <Card className="p-4">
+              <h3 className="font-semibold mb-2">Visualization</h3>
+              <div className="flex justify-center overflow-hidden rounded-md border bg-white">
+                <img
+                  src={response.chart_image}
+                  alt="Generated visualization"
+                  className="h-auto max-h-[460px] w-full object-contain"
+                />
+              </div>
+            </Card>
+          )}
+
           <Card className="p-4">
             <h3 className="font-semibold mb-2">SQL Query</h3>
             <pre className="bg-slate-100 p-3 rounded-md overflow-x-auto">
@@ -169,47 +183,47 @@ export function QueryInput() {
             </pre>
           </Card>
 
-          {response.data && response.data.length > 0 && (
-            <>
-              <VisualizationPanel 
-                data={response.data}
-                columns={response.columns}
-                config={visualizationConfig}
-              />
+          {!response.chart_image && response.data && response.data.length > 0 && (
+            <VisualizationPanel 
+              data={response.data}
+              columns={response.columns}
+              config={visualizationConfig}
+            />
+          )}
 
-              <Card className="p-4">
-                <h3 className="font-semibold mb-2">Data Table</h3>
-                <div className="rounded-md border">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
+          {response.data && response.data.length > 0 && (
+            <Card className="p-4">
+              <h3 className="font-semibold mb-2">Data Table</h3>
+              <div className="rounded-md border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      {response.columns.map((column) => (
+                        <TableHead key={column} className="font-semibold">
+                          {column}
+                        </TableHead>
+                      ))}
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {response.data.map((row, i) => (
+                      <TableRow key={i}>
                         {response.columns.map((column) => (
-                          <TableHead key={column} className="font-semibold">
-                            {column}
-                          </TableHead>
+                          <TableCell key={column}>
+                            {typeof row[column] === 'number' 
+                              ? row[column].toLocaleString()
+                              : row[column]?.toString()}
+                          </TableCell>
                         ))}
                       </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {response.data.map((row, i) => (
-                        <TableRow key={i}>
-                          {response.columns.map((column) => (
-                            <TableCell key={column}>
-                              {typeof row[column] === 'number' 
-                                ? row[column].toLocaleString()
-                                : row[column]?.toString()}
-                            </TableCell>
-                          ))}
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </div>
-                <p className="text-sm text-slate-500 mt-2">
-                  Total rows: {response.data.length}
-                </p>
-              </Card>
-            </>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+              <p className="text-sm text-slate-500 mt-2">
+                Total rows: {response.data.length}
+              </p>
+            </Card>
           )}
         </div>
       )}

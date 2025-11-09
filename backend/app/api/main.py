@@ -6,6 +6,7 @@ from pydantic import BaseModel
 import logging
 from .routes.graph import router as graph_router
 from .routes.procedures import router as procedures_router
+from .routes.reports import router as reports_router
 
 from ..database.connection import DatabaseConnection
 from ..cache.cache_manager import CacheManager
@@ -38,6 +39,7 @@ query_processor = QueryProcessor(db, cache, ai_provider)
 # Include routers
 app.include_router(graph_router)
 app.include_router(procedures_router)
+app.include_router(reports_router)
 
 @app.post("/api/query")
 async def process_query(request: QueryRequest):

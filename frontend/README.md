@@ -27,6 +27,12 @@ npm run start
 - `react-markdown` to render Gemini-generated analysis
 - Shadcn UI primitives (`card`, `button`, `input`, etc.)
 
+### Pages & Features
+- `/analytics` – natural-language analytics console backed by Gemini and SQL Server.
+- `/graph` – knowledge-graph view of the AdventureBikes sales hierarchy.
+- `/procedures` – stored procedure explorer/execution workbench.
+- `/reports` – cascading dropdowns + SARIMAX forecasting with summary cards, charts, CSV export, and PPTX slide deck downloads.
+
 ### Suggested Enhancements
 - Centralize API URLs via environment variables (e.g., `process.env.NEXT_PUBLIC_API_URL`)
 - Add Suspense or skeleton states for long-running Gemini requests

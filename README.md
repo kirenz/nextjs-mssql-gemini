@@ -122,6 +122,13 @@ npm run dev
 
 The development UI runs on [http://localhost:3000](http://localhost:3000) and proxies API calls to the FastAPI service at `http://localhost:8000`. Adjust the proxy URL in `src/app/api/*/route.ts` if you host the backend elsewhere.
 
+## Dashboard Modules
+
+- **Analytics** — Chat with the AdventureBikes data mart, auto-generate SQL through Gemini, and view suggested charts.
+- **Knowledge Graph** — Explore the sales hierarchy at a glance via the force-directed graph and drill into node metrics.
+- **Stored Procedures** — Discover and execute SQL Server stored procedures with friendly parameter forms.
+- **Reports (Forecasting)** — New report builder at `/reports` that offers cascading dropdown filters, SARIMAX forecasts with confidence bounds, charts, CSV exports, and downloadable PPTX slide decks powered by the `/api/reports/*` FastAPI endpoints.
+
 ## Development Notes
 
 - The backend uses `models/gemini-2.5-flash-lite` by default (configurable via `GEMINI_MODEL`) for analytical responses and the same model for SQL generation. Override with `GEMINI_SQL_MODEL` if you prefer a different model; the `models/` prefix is added automatically when omitted.

@@ -130,3 +130,9 @@ class GeminiProvider(AIProvider):
             return {"response": text}
         except Exception as exc:
             return {"error": str(exc)}
+
+    async def generate_analysis(self, prompt: str) -> str:
+        """
+        Helper for callers that just need a plain-text response from the analysis model.
+        """
+        return await self._generate_text(prompt, use_sql_model=False)

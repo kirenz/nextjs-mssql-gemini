@@ -1,5 +1,5 @@
 // src/components/ui/sidebar.tsx
-import { BarChart2, Database, Network } from "lucide-react";
+import { BarChart2, Database, Network, FileText } from "lucide-react";
 import Link from "next/link";
 
 export function Sidebar() {
@@ -26,6 +26,13 @@ export function Sidebar() {
         >
           <Database className="h-5 w-5" />
           <span>Stored Procedures</span>
+        </Link>
+        <Link
+          href="/reports"
+          className="flex items-center space-x-2 p-2 hover:bg-gray-800 rounded"
+        >
+          <FileText className="h-5 w-5" />
+          <span>Reports</span>
         </Link>
       </nav>
     </div>

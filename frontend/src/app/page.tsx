@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { BarChart2, Network } from "lucide-react";
+import { BarChart2, Network, FileText } from "lucide-react";
 
 export default function Home() {
   return (
@@ -21,7 +21,7 @@ export default function Home() {
                 <Button className="mt-4">Get Started</Button>
               </Link>
             </div>
-            <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 pt-12 md:grid-cols-2 md:gap-8">
+            <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 pt-12 md:grid-cols-3 md:gap-8">
               <Card className="p-6">
                 <BarChart2 className="h-12 w-12 mb-4" />
                 <h3 className="text-lg font-bold">Analytics</h3>
@@ -34,6 +34,13 @@ export default function Home() {
                 <h3 className="text-lg font-bold">Knowledge Graph</h3>
                 <p className="text-sm text-gray-500">
                   Visualize relationships in your business data.
+                </p>
+              </Card>
+              <Card className="p-6">
+                <FileText className="h-12 w-12 mb-4" />
+                <h3 className="text-lg font-bold">Reports</h3>
+                <p className="text-sm text-gray-500">
+                  Build guided forecasting packs with reusable filters and downloads.
                 </p>
               </Card>
             </div>

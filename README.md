@@ -78,7 +78,7 @@ Business analytics application with a FastAPI backend, SQL Server connectivity, 
 
    Return to the project root:
    ```bash
-   cd nextjs-mssql-gemini
+   cd ..
    ```
    Enter the frontend workspace:
    ```bash
